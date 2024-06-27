@@ -16,14 +16,18 @@ const exchangeETH = async () => {
     const sendValueHuman = "0.01";
     const gasPrice = await providerTestnet.getGasPrice();
     const nonce = await providerTestnet.getTransactionCount(myAddress); // Dynamically fetch the nonce
+
     const txBuild = {
       from: myAddress, // from,
       to: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14", // to (WETH on Sepolia Test Network),
       value: ethers.utils.parseEther(sendValueHuman), // value,
       nonce: nonce, // nonce,
-      gasLimit: 100000, // gas limit,
       gasPrice: gasPrice, // gas price
     };
+
+    // Estimate gas limit
+    const gasLimit = await providerTestnet.estimateGas(txBuild);
+    txBuild.gasLimit = gasLimit;
 
     // SEND Transaction
     const txSend = await walletSigner.sendTransaction(txBuild);
